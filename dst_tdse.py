@@ -285,9 +285,50 @@ def test_2d():
 
     plt.show()
     
+    
+    
+def test_3d():
+    dt = 0.1
+    t_final = 100
+    n_steps = round(t_final / dt) + 1
+    ic(n_steps)
+    t_range = np.linspace(0, n_steps*dt, n_steps+1)
+
+    T_fun = lambda kx, ky, kz: 0.5 * kx**2 + 0.5*ky**2 + 0.5*kz**2
+    V_fun = lambda x, y, z: -1.0 * (0.01 + x*x+y*y+z*z)**(-.5)
+    L = 15
+    solver = DSTSolver([-L, -L, -L], [L, L, L], [127, 127, 127])
+    solver.set_kinetic_operator(T_fun)
+    solver.set_potential_operator(V_fun)
+
+    ic('Computing initial wavefunction by imaginary time propagation')
+    solver.prepare_for_propagation(-1j*dt)
+    r2 = solver.xx[0]**2 + solver.xx[1]**2 + solver.xx[2]**2
+    psi = solver.xx[1]*np.exp(-r2**.5)
+    psi /= np.linalg.norm(psi)
+    for k in range(10000):
+        psi_new = solver.propagate(psi)
+        psi_new /= np.linalg.norm(psi_new)
+        delta = np.linalg.norm(psi - psi_new)
+        psi = psi_new
+        ic(solver.get_energy(psi), delta)
+        if delta < 1e-6:
+            ic('Energy sufficiently converged!')
+            break
+            
+            
+    plt.figure()
+    bmp = psi[:, :, 64].squeeze()
+    plt.imshow(np.abs(bmp), extent=[solver.a[0], solver.b[0], solver.a[1], solver.b[1]], origin='lower'
+               , aspect='auto')
+    plt.colorbar()
+    plt.title('Eigenfunction of approximate Coulomb potential.')
+    plt.show()
+    
+    
 if __name__ == "__main__":
     #test_1d()
-    test_2d()
+    test_3d()
     
     
     
