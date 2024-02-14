@@ -205,7 +205,7 @@ def test_1d():
     ic(n_steps)
     T_fun = lambda k: 0.5 * k**2
     V_fun = lambda x: 0.5 * x**2
-    solver = DSTSolver(-5, 5, 127)
+    solver = DSTSolver(-5, 5, 15)
     solver.set_kinetic_operator(T_fun)
     solver.set_potential_operator(V_fun)
     solver.prepare_for_propagation(dt)
@@ -327,8 +327,8 @@ def test_3d():
     
     
 if __name__ == "__main__":
-    #test_1d()
-    test_3d()
+    test_1d()
+    #test_3d()
     
     
     
