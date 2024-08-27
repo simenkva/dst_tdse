@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fft import dstn, idstn
 from icecream import ic
+from dct_dst import get_grid
 
 # customize icecream
 ic.configureOutput(prefix='')
@@ -58,10 +59,15 @@ class DSTSolver:
             a = self.a[i]
             b = self.b[i]
             n = self.n[i]
-            self.x_full.append(np.linspace(a, b, n+2))
-            self.x.append( self.x_full[i][1:-1] )
-            self.dx.append( (b - a) / (n+1) )
-            self.k.append( np.pi / (b - a) * np.arange(1, n+1) )
+            x_full, x, k = get_grid(a, b, n, kind='dst', type=1)
+            self.x_full.append(x_full)
+            self.x.append(x)
+            self.dx.append(x[1] - x[0])
+            self.k.append(k)
+            # self.x_full.append(np.linspace(a, b, n+2))
+            # self.x.append( self.x_full[i][1:-1] )
+            # self.dx.append( (b - a) / (n+1) )
+            # self.k.append( np.pi / (b - a) * np.arange(1, n+1) )
 
         self.xx = np.meshgrid(*self.x, indexing='ij')
         self.kk = np.meshgrid(*self.k, indexing='ij')
